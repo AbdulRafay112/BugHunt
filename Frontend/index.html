@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0716" />
+<title>Bug Hunt | Protocol Zero-G</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<!-- Shared astronaut artwork (mascot, login and ship map) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3EEFE"/><stop offset="1" stop-color="#E2C8FF"/></linearGradient>
+    <linearGradient id="visor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A2466"/><stop offset="1" stop-color="#150D26"/></linearGradient>
+    <symbol id="astro" viewBox="0 0 300 360">
+      <g transform="rotate(-6 150 190)">
+        <rect x="86" y="150" width="128" height="128" rx="26" fill="#B388FF"/>
+        <rect x="98" y="164" width="104" height="20" rx="10" fill="#9B6BF0"/>
+        <rect x="108" y="262" width="34" height="44" rx="16" fill="url(#suit)"/>
+        <rect x="158" y="262" width="34" height="44" rx="16" fill="url(#suit)"/>
+        <rect x="104" y="296" width="42" height="22" rx="10" fill="#B388FF"/>
+        <rect x="154" y="296" width="42" height="22" rx="10" fill="#B388FF"/>
+        <rect x="100" y="158" width="100" height="120" rx="38" fill="url(#suit)"/>
+        <rect x="128" y="186" width="44" height="26" rx="7" fill="#150D26"/>
+        <circle cx="138" cy="199" r="3.5" fill="#7CF0B5"/><circle cx="150" cy="199" r="3.5" fill="#FFD166"/><circle cx="162" cy="199" r="3.5" fill="#FF7A9A"/>
+        <g transform="rotate(-35 104 184)"><rect x="62" y="176" width="46" height="22" rx="11" fill="url(#suit)"/><circle cx="62" cy="187" r="13" fill="#F3EEFE"/></g>
+        <rect x="192" y="200" width="22" height="50" rx="11" fill="url(#suit)"/><circle cx="203" cy="252" r="11" fill="#F3EEFE"/>
+        <rect x="112" y="170" width="76" height="16" rx="8" fill="#B388FF"/>
+        <circle cx="150" cy="104" r="76" fill="url(#suit)" stroke="#B388FF" stroke-width="4"/>
+        <rect x="94" y="72" width="112" height="84" rx="42" fill="url(#visor)" stroke="#B388FF" stroke-width="3"/>
+        <path d="M112 92 Q124 80 142 80" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none" opacity=".45"/>
+        <circle cx="131" cy="112" r="5" fill="#E2C8FF"/><circle cx="169" cy="112" r="5" fill="#E2C8FF"/>
+        <circle cx="133" cy="110" r="1.6" fill="#150D26"/><circle cx="171" cy="110" r="1.6" fill="#150D26"/>
+        <path d="M136 127 Q150 138 164 127" stroke="#E2C8FF" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </g>
+    </symbol>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+</svg>
+
+<div class="bg-layer bg-login" aria-hidden="true"></div>
+<div class="bg-layer bg-game" aria-hidden="true"></div>
+<div class="bg-shade" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"></div>
+
+<div class="page">
+<header class="topbar">
+  <div class="brand">PRO<span>GENESIS</span>'27 · Bug Hunt</div>
+  <nav class="tabs" role="tablist" aria-label="Screens">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="s-login" id="t-login">Login and rules</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="s-arena" id="t-arena">Arena</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="s-board" id="t-board">Leaderboard</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- SCREEN 1: LOGIN AND RULES -->
+  <section class="screen active" id="s-login" role="tabpanel" aria-labelledby="t-login">
+    <div class="stack">
+      <div class="hero-card">
+        <div class="hero-img" aria-hidden="true"></div>
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="hero-msg">
+          <div class="label">Protocol Zero-G</div>
+          <h1>Your ship is drifting. Get it back.</h1>
+          <p class="muted">Read the rules, enter your team name and code, and step into the arena.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Rules</div>
+        <h2>Read before you start</h2>
+        <ul class="rules">
+          <li class="key"><strong>Zero AI.</strong> No ChatGPT, Copilot, Claude, or any AI tool. Tab switching is detected and recorded.</li>
+          <li><strong>Languages:</strong> C++, Python, or Java. Core and standard libraries only.</li>
+          <li><strong>Round 01, Hull Breach Triage:</strong> 10 to 12 short programs, 60 minutes. PF bugs.</li>
+          <li><strong>Round 02, Core Meltdown:</strong> 4 to 5 linked failures, 75 minutes. OOP bugs. Wrong deployments cost time penalties.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="label">Team sign in</div>
+        <h1>Enter your squad</h1>
+        <form id="loginForm" novalidate>
+          <div class="row2">
+            <label>Team name
+              <input type="text" id="teamName" placeholder="e.g. Falcon Crew" />
+            </label>
+            <label>Team code
+              <input type="text" id="teamCode" placeholder="Code from your registration email" />
+            </label>
+          </div>
+          <button class="primary" type="submit">Enter the arena</button>
+          <div class="err" id="loginErr" role="alert"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: SPLIT-SCREEN ARENA -->
+  <section class="screen" id="s-arena" role="tabpanel" aria-labelledby="t-arena">
+    <div class="arena-head">
+      <div>
+        <div class="label" id="roundLabel">Round 01 · Hull Breach Triage</div>
+        <div class="timer" id="timer">60:00</div>
+        <div class="muted">Time left in this round</div>
+      </div>
+      <div class="stats">
+        <div class="stat oxygen">
+          <div class="k">Oxygen</div>
+          <div class="bar" aria-hidden="true"><div id="oxyBar"></div></div>
+          <div class="v" id="oxyVal">100%</div>
+        </div>
+        <div class="stat"><div class="k">Wrong</div><div class="v" id="wrongCount">0</div></div>
+        <div class="stat"><div class="k">Tab switches</div><div class="v" id="tabCount">0</div></div>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="card" id="editorCard">
+        <div class="mascot" id="mascot">
+          <svg viewBox="0 0 300 360" aria-hidden="true"><use href="#astro" width="300" height="360"/></svg>
+          <div class="bubble" id="bubble">Hi! Find the bug in this function, then submit.</div>
+        </div>
+
+        <div class="mission">
+          <div class="qnav">
+            <button id="prevQ" type="button" aria-label="Previous question">← Prev</button>
+            <span class="muted" id="qCount">Question 1 of 5</span>
+            <button id="nextQ" type="button" aria-label="Next question">Next →</button>
+          </div>
+          <select id="lang" aria-label="Language" style="width:auto">
+            <option value="python" selected>Python</option>
+            <option value="cpp" disabled>C++ (sample TBA)</option>
+            <option value="java" disabled>Java (sample TBA)</option>
+          </select>
+        </div>
+        <div class="qnav" id="chips" style="margin-bottom:6px"></div>
+
+        <h2 id="qTitle">Find the bug</h2>
+        <p class="prompt" id="qPrompt"></p>
+        <div class="editor-wrap">
+          <div class="gutter" id="gutter" aria-hidden="true"></div>
+          <textarea id="code" spellcheck="false" aria-label="Code editor"></textarea>
+        </div>
+        <div class="actions">
+          <button class="secondary-btn" id="resetBtn" type="button">Reset code</button>
+          <button class="primary submit-btn" id="submitBtn" type="button">Submit fix</button>
+        </div>
+        <div class="notice" id="notice" role="status"></div>
+        <div class="results" id="results"></div>
+
+        <div class="bank">
+          <button class="bank-toggle" id="bankToggle" type="button" aria-expanded="false">Question bank</button>
+          <div id="bankPanel" hidden></div>
+        </div>
+      </div>
+
+      <div class="card map">
+        <div class="map-head">
+          <h2>Ship map</h2>
+          <span class="progress" id="progress">0 of 5 levels cleared</span>
+        </div>
+        <svg class="ship" viewBox="0 0 320 260" role="img" aria-labelledby="mapTitle mapDesc">
+          <title id="mapTitle">Ship levels and radar</title>
+          <desc id="mapDesc">Top-down ship with five rooms connected by corridors. A radar sweep rotates around the ship. Each room has its own colour. Cleared rooms are filled, the current room pulses, and locked rooms are dim.</desc>
+
+          <!-- hull -->
+          <path d="M18 150 Q34 84 160 70 Q282 74 304 150 Q282 226 160 230 Q34 216 18 150 Z" fill="rgba(179,136,255,.06)" stroke="rgba(179,136,255,.5)" stroke-width="2"/>
+          <path d="M40 150 L280 150" stroke="rgba(179,136,255,.14)" stroke-dasharray="2 6"/>
+
+          <!-- radar -->
+          <circle cx="160" cy="150" r="110" fill="none" stroke="rgba(124,240,181,.22)" stroke-dasharray="3 6"/>
+          <circle cx="160" cy="150" r="70" fill="none" stroke="rgba(124,240,181,.12)"/>
+          <circle cx="160" cy="150" r="35" fill="none" stroke="rgba(124,240,181,.12)"/>
+
+          <!-- corridors -->
+          <line class="corr" x1="50" y1="150" x2="110" y2="150"/>
+          <line class="corr" x1="110" y1="150" x2="165" y2="95"/>
+          <line class="corr" x1="165" y1="95" x2="225" y2="95"/>
+          <line class="corr" x1="225" y1="95" x2="275" y2="150"/>
+
+          <!-- rooms -->
+          <g id="n1"><circle class="room" cx="50" cy="150" r="19"/><text x="50" y="154" text-anchor="middle" font-size="13" font-family="ui-monospace, monospace" class="rtxt">1</text><text class="room-label" x="50" y="186">Oxygen</text></g>
+          <g id="n2"><circle class="room" cx="110" cy="150" r="19"/><text x="110" y="154" text-anchor="middle" font-size="13" font-family="ui-monospace, monospace" class="rtxt">2</text><text class="room-label" x="110" y="186">Hull</text></g>
+          <g id="n3"><circle class="room" cx="165" cy="95" r="21"/><text x="165" y="99" text-anchor="middle" font-size="14" font-family="ui-monospace, monospace" class="rtxt">3</text><text class="room-label" x="165" y="70">Engine</text></g>
+          <g id="n4"><circle class="room" cx="225" cy="95" r="19"/><text x="225" y="99" text-anchor="middle" font-size="13" font-family="ui-monospace, monospace" class="rtxt">4</text><text class="room-label" x="225" y="70">Navigation</text></g>
+          <g id="n5"><circle class="room" cx="275" cy="150" r="19"/><text x="275" y="154" text-anchor="middle" font-size="13" font-family="ui-monospace, monospace" class="rtxt">5</text><text class="room-label" x="275" y="186">Bridge</text></g>
+
+          <circle id="ring" class="ring" cx="0" cy="0" r="27" stroke="#b388ff"/>
+          <g id="spaceship">
+  <g class="ship-body">
+    <path d="M-22 6 L-34 16 L-34 22 L-18 16 Z" fill="#b388ff"/>
+    <path d="M22 6 L34 16 L34 22 L18 16 Z" fill="#b388ff"/>
+    <ellipse cx="0" cy="0" rx="20" ry="10" fill="#e2c8ff" stroke="#b388ff" stroke-width="2"/>
+    <path d="M-8 -4 Q0 -14 8 -4 Z" fill="#5fd4ff" stroke="#b388ff" stroke-width="1.5"/>
+    <circle cx="-10" cy="2" r="2" fill="#ffd166"/>
+    <circle cx="0" cy="3" r="2" fill="#ffd166"/>
+    <circle cx="10" cy="2" r="2" fill="#ffd166"/>
+  </g>
+  <path class="flame" d="M-5 10 L0 26 L5 10 Z" fill="#ff7aa8"/>
+</g>
+        </svg>
+        <div class="legend">
+          <span><span class="dot" style="background:#7cf0b5"></span>Cleared</span>
+          <span><span class="dot" style="background:#b388ff"></span>Current</span>
+          <span><span class="dot" style="background:#55486e"></span>Locked</span>
+        </div>
+        <div class="levels" id="levelList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 3: LIVE LEADERBOARD -->
+  <section class="screen" id="s-board" role="tabpanel" aria-labelledby="t-board">
+    <div class="lb-top">
+      <div>
+        <div class="label">Live leaderboard</div>
+        <h1>Standings</h1>
+        <span class="live">Live</span> <span class="pill" style="margin-left:6px">Sample data</span>
+      </div>
+      <div style="text-align:right">
+        <div class="muted">Round 01 ends in</div>
+        <div class="timer" id="boardTimer">60:00</div>
+      </div>
+    </div>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th>Rank</th><th>Team</th><th class="num">Round 01</th><th class="num">Round 02</th><th class="num">Total</th><th class="num">Repair time</th></tr></thead>
+        <tbody id="lbBody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
