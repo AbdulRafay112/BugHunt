@@ -74,11 +74,28 @@
         <div class="label">Rules</div>
         <h2>Read before you start</h2>
         <ul class="rules">
-          <li class="key"><strong>Zero AI.</strong> No ChatGPT, Copilot, Claude, or any AI tool. Tab switching is detected and recorded.</li>
-          <li><strong>Languages:</strong> C++, Python, or Java. Core and standard libraries only.</li>
-          <li><strong>Round 01, Hull Breach Triage:</strong> 10 to 12 short programs, 60 minutes. PF bugs.</li>
-          <li><strong>Round 02, Core Meltdown:</strong> 4 to 5 linked failures, 75 minutes. OOP bugs. Wrong deployments cost time penalties.</li>
-        </ul>
+  <li class="key"><strong>Zero AI.</strong> No ChatGPT, Copilot, Claude, or any AI tool. The consequence is listed under Penalties.</li>
+  <li><strong>Languages:</strong> C++, Python, or Java. Core and standard libraries only.</li>
+  <li class="wide"><strong>Round 01: Hull Breach</strong>
+    <ul class="penalty-list">
+      <li>Duration: 60 min</li>
+      <li>10 to 12 short PF debugging questions</li>
+    </ul>
+  </li>
+  <li class="wide"><strong>Round 02: Core Meltdown</strong>
+    <ul class="penalty-list">
+      <li>Duration: 75 min</li>
+      <li>4 to 5 OOP debugging questions</li>
+    </ul>
+  </li>
+  <li class="wide"><strong>Scoring:</strong> cumulative across both rounds. A submission earns points only when it passes all hidden cases.</li>
+  <li class="wide"><strong>Penalties</strong>
+    <ul class="penalty-list">
+      <li>Compile error, runtime error, or failed hidden test will result in zero points for that attempt.</li>
+      <li>Tab switches during the hackathon will result in disqualification.</li>
+    </ul>
+  </li>
+</ul>
       </div>
 
       <div class="card">
@@ -115,14 +132,13 @@
           <div class="v" id="oxyVal">100%</div>
         </div>
         <div class="stat"><div class="k">Wrong</div><div class="v" id="wrongCount">0</div></div>
-        <div class="stat"><div class="k">Tab switches</div><div class="v" id="tabCount">0</div></div>
       </div>
     </div>
 
     <div class="split">
       <div class="card" id="editorCard">
         <div class="mascot" id="mascot">
-          <svg viewBox="0 0 300 360" aria-hidden="true"><use href="#astro" width="300" height="360"/></svg>
+          <img class="mascot-img" src="assets/astronaut-dab.png" alt="" />
           <div class="bubble" id="bubble">Hi! Find the bug in this function, then submit.</div>
         </div>
 
@@ -166,11 +182,7 @@
         </div>
         <svg class="ship" viewBox="0 0 320 260" role="img" aria-labelledby="mapTitle mapDesc">
           <title id="mapTitle">Ship levels and radar</title>
-          <desc id="mapDesc">Top-down ship with five rooms connected by corridors. A radar sweep rotates around the ship. Each room has its own colour. Cleared rooms are filled, the current room pulses, and locked rooms are dim.</desc>
-
-          <!-- hull -->
-          <path d="M18 150 Q34 84 160 70 Q282 74 304 150 Q282 226 160 230 Q34 216 18 150 Z" fill="rgba(179,136,255,.06)" stroke="rgba(179,136,255,.5)" stroke-width="2"/>
-          <path d="M40 150 L280 150" stroke="rgba(179,136,255,.14)" stroke-dasharray="2 6"/>
+          <desc id="mapDesc">Top-down ship with five rooms connected by corridors. Each room has its own colour. Cleared rooms are filled, the current room pulses, and locked rooms are dim.</desc>
 
           <!-- radar -->
           <circle cx="160" cy="150" r="110" fill="none" stroke="rgba(124,240,181,.22)" stroke-dasharray="3 6"/>
@@ -190,24 +202,17 @@
           <g id="n4"><circle class="room" cx="225" cy="95" r="19"/><text x="225" y="99" text-anchor="middle" font-size="13" font-family="ui-monospace, monospace" class="rtxt">4</text><text class="room-label" x="225" y="70">Navigation</text></g>
           <g id="n5"><circle class="room" cx="275" cy="150" r="19"/><text x="275" y="154" text-anchor="middle" font-size="13" font-family="ui-monospace, monospace" class="rtxt">5</text><text class="room-label" x="275" y="186">Bridge</text></g>
 
-          <circle id="ring" class="ring" cx="0" cy="0" r="27" stroke="#b388ff"/>
-          <g id="spaceship">
-  <g class="ship-body">
-    <path d="M-22 6 L-34 16 L-34 22 L-18 16 Z" fill="#b388ff"/>
-    <path d="M22 6 L34 16 L34 22 L18 16 Z" fill="#b388ff"/>
-    <ellipse cx="0" cy="0" rx="20" ry="10" fill="#e2c8ff" stroke="#b388ff" stroke-width="2"/>
-    <path d="M-8 -4 Q0 -14 8 -4 Z" fill="#5fd4ff" stroke="#b388ff" stroke-width="1.5"/>
-    <circle cx="-10" cy="2" r="2" fill="#ffd166"/>
-    <circle cx="0" cy="3" r="2" fill="#ffd166"/>
-    <circle cx="10" cy="2" r="2" fill="#ffd166"/>
-  </g>
-  <path class="flame" d="M-5 10 L0 26 L5 10 Z" fill="#ff7aa8"/>
-</g>
+          <g id="ring"><circle class="ring" cx="0" cy="0" r="27" stroke="#b388ff"/></g>
+          <g id="astroBadge">
+            <g class="astro-bob">
+              <image href="assets/astronaut-rocket.png" x="-25" y="-25" width="50" height="50"/>
+            </g>
+          </g>
         </svg>
         <div class="legend">
-          <span><span class="dot" style="background:#7cf0b5"></span>Cleared</span>
-          <span><span class="dot" style="background:#b388ff"></span>Current</span>
-          <span><span class="dot" style="background:#55486e"></span>Locked</span>
+          <span><span class="dot" style="background:#b388ff"></span>Cleared (solid)</span>
+          <span><span class="dot" style="background:#b388ff;opacity:.5"></span>Current</span>
+          <span><span class="dot" style="background:#b388ff;opacity:.2"></span>Locked (faded)</span>
         </div>
         <div class="levels" id="levelList"></div>
       </div>

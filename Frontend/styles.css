@@ -66,7 +66,9 @@
 
   .rules { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .rules li { font-size: .92rem; padding: 10px 12px; background: var(--panel-2); border-radius: 12px; border: 1px solid var(--line); }
-  .rules li.key { border-color: var(--bad); }
+  .rules li.key { border-color: #5fd4ff; }
+  .rules li.wide { grid-column: 1 / -1; }
+  .penalty-list { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
   form { display: grid; gap: 14px; }
   label { font-size: .85rem; color: var(--muted); display: grid; gap: 6px; min-width: 0; }
   input, select { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; width: 100%; min-width: 0; }
@@ -208,3 +210,20 @@
     .stars::before, .stars::after, .timer.low, .ring, .corr, .mascot.cheer svg { animation: none; }
     #astro, #ring { transition: none; }
   }
+
+
+/* Animated mini astronaut on the ship map */
+.astro-bob { animation: astro-bob 1.8s ease-in-out infinite; }
+.astro-wave { transform-box: fill-box; transform-origin: 50% 25%; animation: astro-wave 1.4s ease-in-out infinite; }
+.astro-spark { transform-box: fill-box; transform-origin: center; animation: twinkle 1.6s ease-in-out infinite; }
+@keyframes astro-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes astro-wave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-28deg); } }
+@keyframes twinkle { 0%, 100% { opacity: .35; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.2); } }
+@media (prefers-reduced-motion: reduce) {
+  .astro-bob, .astro-wave, .astro-spark { animation: none; }
+}
+
+
+/* Arena mascot image */
+.mascot-img { width: 64px; height: auto; flex: 0 0 auto; }
+.mascot.cheer .mascot-img { animation: hop .6s ease 2; }

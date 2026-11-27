@@ -33,17 +33,6 @@
     document.getElementById('oxyBar').style.width = oxy + '%';
     document.getElementById('oxyVal').textContent = Math.round(oxy) + '%';
   }, 1000);
-
-  // ---------- Tab-switch detection ----------
-  let tabSwitches = 0;
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) return;
-    tabSwitches++;
-    document.getElementById('tabCount').textContent = tabSwitches;
-    setNotice('Tab switch recorded. Stay on this page during the round.');
-    setMascot('Psst! Stay on the ship. I can see when you leave.', 'warn');
-  });
-
   // ---------- Question bank ----------
   const BUGGY = `def average(nums):
     total = 0
@@ -103,25 +92,23 @@
     }
   }
 
-  // Radar sweep: drawn and timed in one place so the beeps match the visual
-  const SWEEP_MS = 3000;
-  const lastD = {};
-  function blipRoom(i) {
-    const g = document.getElementById('n' + (i + 1)).querySelector('.room');
-    g.classList.remove('blip'); void g.getBoundingClientRect(); g.classList.add('blip');
-  }
-  function radarTick(now) {
-    const cur = ((now % SWEEP_MS) / SWEEP_MS) * 360;
-    LEVELS.forEach((lvl, i) => {
-      if (i > maxUnlocked()) return;
-      const deg = (Math.atan2(lvl.x - 160, -(lvl.y - 150)) * 180 / Math.PI + 360) % 360;
-      const d = (cur - deg + 360) % 360;
-      if (lastD[i] !== undefined && d < lastD[i]) {        // sweep just passed this room
-        blipRoom(i);
-      }
-      lastD[i] = d;
-    });
-    requestAnimationFrame(radarTick);
+  // ---------- Astronaut jump (arc) between rooms ----------
+  let astroPos = null, astroTarget = null;
+  function moveAstro(toX, toY) {
+    const el = document.getElementById('astroBadge');
+    if (astroTarget && astroTarget.x === toX && astroTarget.y === toY) return;
+    astroTarget = { x: toX, y: toY };
+    if (!astroPos) { astroPos = { x: toX, y: toY }; el.style.transform = `translate(${toX}px, ${toY}px)`; return; }
+    const from = { ...astroPos }, t0 = performance.now(), dur = 900;
+    const step = now => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      const x = from.x + (toX - from.x) * e;
+      const y = from.y + (toY - from.y) * e - Math.sin(Math.PI * p) * 46;
+      el.style.transform = `translate(${x}px, ${y}px)`;
+      if (p < 1) requestAnimationFrame(step); else astroPos = { x: toX, y: toY };
+    };
+    requestAnimationFrame(step);
   }
 
   // ---------- Rendering ----------
@@ -186,26 +173,28 @@
       const room = g.querySelector('.room');
       const txt = g.querySelector('.rtxt');
       const done = S.cleared.has(i), now = i === S.level, open = i <= unlocked;
-      g.style.opacity = open ? '1' : '.45';
+      room.setAttribute('fill', lvl.color);
+      room.setAttribute('stroke', lvl.color);
       if (done) {
-        room.setAttribute('fill', lvl.color); room.setAttribute('fill-opacity', '1'); room.setAttribute('stroke', lvl.color);
+        room.setAttribute('fill-opacity', '1');
         txt.textContent = '✓'; txt.setAttribute('fill', '#120a22');
       } else if (now) {
-        room.setAttribute('fill', lvl.color); room.setAttribute('fill-opacity', '.28'); room.setAttribute('stroke', lvl.color);
+        room.setAttribute('fill-opacity', '.5');
         txt.textContent = String(i + 1); txt.setAttribute('fill', '#f3eefe');
       } else if (open) {
-        room.setAttribute('fill', '#1e1435'); room.setAttribute('fill-opacity', '1'); room.setAttribute('stroke', lvl.color);
+        room.setAttribute('fill-opacity', '.25');
         txt.textContent = String(i + 1); txt.setAttribute('fill', lvl.color);
       } else {
-        room.setAttribute('fill', '#120a22'); room.setAttribute('fill-opacity', '1'); room.setAttribute('stroke', '#55486e');
-        txt.textContent = '×'; txt.setAttribute('fill', '#55486e');
+        room.setAttribute('fill-opacity', '.1');
+        txt.textContent = '×'; txt.setAttribute('fill', lvl.color);
       }
+      g.style.opacity = open ? '1' : '.45';
     });
     const cur = LEVELS[S.level];
-    document.getElementById('spaceship').style.transform = `translate(${cur.x}px, ${cur.y - 58}px)`;
+    moveAstro(cur.x, cur.y - 32);
     const ring = document.getElementById('ring');
     ring.style.transform = `translate(${cur.x}px, ${cur.y}px)`;
-    ring.setAttribute('stroke', cur.color);
+    ring.querySelector('circle').setAttribute('stroke', cur.color);
     document.getElementById('progress').textContent = `${S.cleared.size} of 5 levels cleared`;
 
     document.getElementById('levelList').innerHTML = LEVELS.map((l, i) => {
@@ -290,4 +279,3 @@
 
   // ---------- Start ----------
   renderQuestion();
-  requestAnimationFrame(radarTick);
